@@ -222,7 +222,7 @@ namespace com.bloomberg.emsx.samples
                 {
                     System.Console.WriteLine("Authorization successfull...");
 
-                    sendCreateIOI(session, d_emsx);
+                    sendUpdateIOI(session, d_emsx);
                 }
                 else if (msg.MessageType.Equals(AUTHORIZATION_FAILURE))
                 {
@@ -233,7 +233,7 @@ namespace com.bloomberg.emsx.samples
                 }
                 else if (msg.CorrelationID == requestID)
                 {
-                    System.Console.WriteLine(msg.MessageType + ">>" + msg.ToString());
+                    System.Console.WriteLine(msg.ToString());
 
                     if (msg.MessageType.Equals("handle"))
                     {
@@ -288,10 +288,13 @@ namespace com.bloomberg.emsx.samples
             }
         }
 
-        private void sendCreateIOI(Session session, String emsxSvc)
+        private void sendUpdateIOI(Session session, String emsxSvc)
         {
             Service service = session.GetService(emsxSvc);
-            Request request = service.CreateRequest("createIoi");
+            Request request = service.CreateRequest("updateIoi");
+
+            Element handle = request.GetElement("handle");
+            handle.SetElement("value", "90273028-de0b-4bc4-b5db-60fc4662c88b");
 
             Element ioi = request.GetElement("ioi");
 
@@ -327,7 +330,8 @@ namespace com.bloomberg.emsx.samples
 
             // Create a quote consisting of a bid and an offer
             Element bid = ioi.GetElement("bid");
-            //bid.GetElement("delta").SetValue(.0041);
+            bid.GetElement("price").SetChoice("fixed");
+            bid.GetElement("price").GetElement("fixed").GetElement("price").SetValue(83.641);
             bid.GetElement("size").GetElement("quantity").SetValue(1000);
             bid.GetElement("referencePrice").SetElement("price", 202.15);
             bid.GetElement("referencePrice").SetElement("currency", "GBp");
